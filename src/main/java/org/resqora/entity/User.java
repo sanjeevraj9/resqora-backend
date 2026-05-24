@@ -52,6 +52,8 @@ public class User {
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Boolean emailVerified=false;
+    private String verificationToken;
 
     @PrePersist
     public void prePersist() {

@@ -12,4 +12,5 @@ public interface AuthService {
     AuthResponse registerMechanic(RegisterMechanicRequest request);
 
     AuthResponse login(LoginRequest request);
+    void verifyEmail(String token);
 }

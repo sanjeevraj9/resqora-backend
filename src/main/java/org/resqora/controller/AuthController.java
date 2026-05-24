@@ -9,10 +9,7 @@ import org.resqora.dto.response.AuthResponse;
 import org.resqora.dto.request.RegisterUserRequest;
 import org.resqora.service.AuthService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -39,6 +36,14 @@ private final AuthService authService;
         @Valid @RequestBody LoginRequest request
         ){
     return ResponseEntity.ok(authService.login(request));
+}
+
+@GetMapping("/verify")
+    public ResponseEntity<String> verifyEmail(
+            @RequestParam String token
+){
+    authService.verifyEmail(token);
+    return ResponseEntity.ok("Email verified Successfully! You can now login.");
 }
 
 

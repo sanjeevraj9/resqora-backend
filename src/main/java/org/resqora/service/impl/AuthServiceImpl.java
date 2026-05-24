@@ -12,11 +12,13 @@ import org.resqora.exception.BadRequestException;
 import org.resqora.repository.MechanicProfileRepository;
 import org.resqora.repository.UserRepository;
 import org.resqora.security.JwtService;
+import org.resqora.security.EmailService;
 import org.resqora.service.AuthService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +28,7 @@ public class AuthServiceImpl implements AuthService {
     private final MechanicProfileRepository mechanicProfileRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final EmailService emailService;
 
     @Override
     public AuthResponse registerUser(RegisterUserRequest request) {
@@ -38,29 +41,27 @@ public class AuthServiceImpl implements AuthService {
             throw new BadRequestException("Phone already registered");
         }
 
+        String verificationToken = UUID.randomUUID().toString();
+
         User user = User.builder()
                 .name(request.getName())
                 .email(request.getEmail())
                 .phone(request.getPhone())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
+                .emailVerified(false)
+                .verificationToken(verificationToken)
                 .build();
 
         userRepository.save(user);
 
-        String token = jwtService.generateToken(
-                org.springframework.security.core.userdetails.User
-                        .withUsername(user.getEmail())
-                        .password(user.getPassword())
-                        .authorities("ROLE_USER")
-                        .build()
-        );
+        emailService.sendVerificationEmail(user.getEmail(), verificationToken);
 
         return AuthResponse.builder()
-                .token(token)
+                .token(null)
                 .email(user.getEmail())
                 .role(user.getRole())
-                .message("User registered successfully")
+                .message("Registration successful! Please verify your email before logging in.")
                 .build();
     }
 
@@ -68,12 +69,14 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponse registerMechanic(RegisterMechanicRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already registered");
+            throw new BadRequestException("Email already registered");
         }
 
         if (userRepository.existsByPhone(request.getPhone())) {
-            throw new RuntimeException("Phone already registered");
+            throw new BadRequestException("Phone already registered");
         }
+
+        String verificationToken = UUID.randomUUID().toString();
 
         User user = User.builder()
                 .name(request.getName())
@@ -81,6 +84,8 @@ public class AuthServiceImpl implements AuthService {
                 .phone(request.getPhone())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.MECHANIC)
+                .emailVerified(false)
+                .verificationToken(verificationToken)
                 .build();
 
         userRepository.save(user);
@@ -96,19 +101,13 @@ public class AuthServiceImpl implements AuthService {
 
         mechanicProfileRepository.save(mechanic);
 
-        String token = jwtService.generateToken(
-                org.springframework.security.core.userdetails.User
-                        .withUsername(user.getEmail())
-                        .password(user.getPassword())
-                        .authorities("ROLE_MECHANIC")
-                        .build()
-        );
+        emailService.sendVerificationEmail(user.getEmail(), verificationToken);
 
         return AuthResponse.builder()
-                .token(token)
+                .token(null)
                 .email(user.getEmail())
                 .role(user.getRole())
-                .message("Mechanic registered successfully")
+                .message("Registration successful! Please verify your email before logging in.")
                 .build();
     }
 
@@ -116,10 +115,15 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponse login(LoginRequest request) {
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
+                .orElseThrow(() -> new BadRequestException("Invalid credentials"));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid credentials");
+            throw new BadRequestException("Invalid credentials");
+        }
+
+        // Email verification check
+        if (Boolean.FALSE.equals(user.getEmailVerified())) {
+            throw new BadRequestException("Please verify your email first! Check your inbox.");
         }
 
         String token = jwtService.generateToken(
@@ -136,5 +140,15 @@ public class AuthServiceImpl implements AuthService {
                 .role(user.getRole())
                 .message("Login successful")
                 .build();
+    }
+
+    @Override
+    public void verifyEmail(String token) {
+        User user = userRepository.findByVerificationToken(token)
+                .orElseThrow(() -> new BadRequestException("Invalid or expired verification link"));
+
+        user.setEmailVerified(true);
+        user.setVerificationToken(null);
+        userRepository.save(user);
     }
 }
