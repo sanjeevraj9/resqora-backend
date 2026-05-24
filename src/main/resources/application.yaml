@@ -7,19 +7,10 @@ spring:
     username: ${MYSQLUSER}
     password: ${MYSQLPASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
-  mail:
-    host: smtp.gmail.com
-    port: 465
-    username: ${GMAIL_USERNAME}
-    password: ${GMAIL_APP_PASSWORD}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          ssl:
-            enable:true
-          starttls:
-            enable: false
+
+  sendgrid:
+    api-key: ${SENDGRID_API_KEY}
+    from-email: sanjeevraj952545@gmail.com
 
   jpa:
     hibernate:
