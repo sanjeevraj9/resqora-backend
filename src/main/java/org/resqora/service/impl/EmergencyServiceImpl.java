@@ -22,7 +22,7 @@ public class EmergencyServiceImpl
     @Value("${twilio.auth.token}")
     private String authToken;
 
-    @Value("${twilio.phone}")
+    @Value("${twilio.phone.number}")
     private String twilioPhone;
 
     @Override
