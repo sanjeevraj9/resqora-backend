@@ -4,6 +4,7 @@ import org.resqora.dto.request.UpdateMechanicProfileRequest;
 import org.resqora.dto.request.UpdateUserProfileRequest;
 import org.resqora.dto.response.MechanicProfileResponse;
 import org.resqora.dto.response.UserProfileResponse;
+import org.resqora.entity.User;
 
 public interface UserService {
 
@@ -16,4 +17,5 @@ public interface UserService {
     MechanicProfileResponse getMechanicProfile(String email);
 
     MechanicProfileResponse updateMechanicProfile(String email, UpdateMechanicProfileRequest request);
+    User findByEmail(String email);
 }

@@ -8,5 +8,6 @@ public enum IssueType {
     FUEL_EMPTY,
     ACCIDENT,
     TOWING,
-    OTHER
+    OTHER,
+    EMERGENCY
 }

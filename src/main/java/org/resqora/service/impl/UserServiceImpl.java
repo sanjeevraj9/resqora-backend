@@ -122,6 +122,12 @@ public class UserServiceImpl implements UserService {
 
         return getMechanicProfile(email);
     }
+    @Override
+    public User findByEmail(String email) {
+        return userRepository
+                .findByEmail(email)
+                .orElseThrow();
+    }
 
     private UserProfileResponse map(User user) {
         return UserProfileResponse.builder()
