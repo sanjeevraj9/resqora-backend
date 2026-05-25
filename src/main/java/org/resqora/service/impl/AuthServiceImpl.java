@@ -55,7 +55,17 @@ public class AuthServiceImpl implements AuthService {
 
         userRepository.save(user);
 
-        emailService.sendVerificationEmail(user.getEmail(), verificationToken);
+        try {
+            emailService.sendVerificationEmail(
+                    user.getEmail(),
+                    verificationToken
+            );
+        } catch (Exception e) {
+            System.out.println(
+                    "Verification email failed: "
+                            + e.getMessage()
+            );
+        }
 
         return AuthResponse.builder()
                 .token(null)
@@ -101,7 +111,17 @@ public class AuthServiceImpl implements AuthService {
 
         mechanicProfileRepository.save(mechanic);
 
-        emailService.sendVerificationEmail(user.getEmail(), verificationToken);
+        try {
+            emailService.sendVerificationEmail(
+                    user.getEmail(),
+                    verificationToken
+            );
+        } catch (Exception e) {
+            System.out.println(
+                    "Verification email failed: "
+                            + e.getMessage()
+            );
+        }
 
         return AuthResponse.builder()
                 .token(null)
