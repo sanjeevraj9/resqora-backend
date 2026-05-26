@@ -49,9 +49,9 @@ Thumbs.db
 .env
 .env.*
 src/main/resources/application.properties
-src/main/resources/application.yaml
+
 src/main/resources/application.yml
-/backend/src/main/resources/application.yaml
+
 /backend/src/main/resources/application-local.yaml
 
 # temp
