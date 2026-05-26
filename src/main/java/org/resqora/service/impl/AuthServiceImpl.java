@@ -124,6 +124,8 @@ public class AuthServiceImpl implements AuthService {
         }
 
         return AuthResponse.builder()
+                .id(user.getId())
+                .name(user.getName())
                 .token(null)
                 .email(user.getEmail())
                 .role(user.getRole())
@@ -155,6 +157,8 @@ public class AuthServiceImpl implements AuthService {
         );
 
         return AuthResponse.builder()
+                .id(user.getId())
+                .name(user.getName())
                 .token(token)
                 .email(user.getEmail())
                 .role(user.getRole())

@@ -25,6 +25,7 @@ public class WebSocketConfig
             StompEndpointRegistry registry
     ) {
         registry.addEndpoint("/ws")
-                .setAllowedOriginPatterns("*");
+                .setAllowedOriginPatterns("*")
+                .withSockJS();
     }
 }

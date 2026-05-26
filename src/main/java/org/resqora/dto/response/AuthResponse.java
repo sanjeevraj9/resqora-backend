@@ -10,7 +10,8 @@ import org.resqora.enums.Role;
 @AllArgsConstructor
 @Builder
 public class AuthResponse {
-
+    private Long id;
+    private String name;
     private String token;
     private String email;
     private Role role;

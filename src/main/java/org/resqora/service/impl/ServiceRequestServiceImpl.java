@@ -358,19 +358,36 @@ public class ServiceRequestServiceImpl implements ServiceRequestService {
         ServiceRequest request =
                 serviceRequestRepository.findById(requestId)
                         .orElseThrow(() ->
-                                new ResourceNotFoundException("Request not found"));
+                                new ResourceNotFoundException(
+                                        "Request not found"
+                                ));
 
-        LiveLocationNotification notification =
-                LiveLocationNotification.builder()
-                        .requestId(requestId)
-                        .latitude(latitude)
-                        .longitude(longitude)
-                        .build();
-
-        notificationService.notifyLiveLocation(
-                request.getUser(),
-                notification
+        request.setLatitude(
+                BigDecimal.valueOf(latitude)
         );
+
+        request.setLongitude(
+                BigDecimal.valueOf(longitude)
+        );
+
+        serviceRequestRepository.save(request);
+
+        try {
+            LiveLocationNotification notification =
+                    LiveLocationNotification.builder()
+                            .requestId(requestId)
+                            .latitude(latitude)
+                            .longitude(longitude)
+                            .build();
+
+            notificationService.notifyLiveLocation(
+                    request.getUser(),
+                    notification
+            );
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -437,6 +454,7 @@ public class ServiceRequestServiceImpl implements ServiceRequestService {
     private ServiceRequestResponse map(ServiceRequest request) {
         return ServiceRequestResponse.builder()
                 .id(request.getId())
+                .userId(request.getUser().getId())
                 .vehicleId(request.getVehicle().getId())
                 .issueType(request.getIssueType())
                 .description(request.getDescription())
@@ -448,6 +466,7 @@ public class ServiceRequestServiceImpl implements ServiceRequestService {
                 .paymentStatus(request.getPaymentStatus())
                 .createdAt(request.getCreatedAt())
 
+
                 .vehicleBrand(
                         request.getVehicle() != null
                                 ? request.getVehicle().getBrand()
@@ -457,6 +476,11 @@ public class ServiceRequestServiceImpl implements ServiceRequestService {
                 .vehicleModel(
                         request.getVehicle() != null
                                 ? request.getVehicle().getModel()
+                                : null
+                )
+                .mechanicId(
+                        request.getMechanic() != null
+                                ? request.getMechanic().getId()
                                 : null
                 )
 

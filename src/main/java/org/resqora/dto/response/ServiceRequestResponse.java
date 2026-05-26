@@ -15,6 +15,8 @@ import java.time.LocalDateTime;
 public class ServiceRequestResponse {
 
     private Long id;
+    private Long userId;
+    private Long mechanicId;
     private Long vehicleId;
     private IssueType issueType;
     private String description;
