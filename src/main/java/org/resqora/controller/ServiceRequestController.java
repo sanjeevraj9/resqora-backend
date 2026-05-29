@@ -3,13 +3,13 @@ package org.resqora.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.resqora.dto.request.CreateServiceRequest;
+import org.resqora.dto.request.PaymentUpdateRequest;
 import org.resqora.dto.request.UpdateStatusRequest;
 import org.resqora.dto.response.LiveLocationNotification;
 import org.resqora.dto.response.MechanicStatsResponse;
 import org.resqora.dto.response.NearbyMechanicResponse;
 import org.resqora.dto.response.ServiceRequestResponse;
 import org.resqora.service.ServiceRequestService;
-import org.resqora.service.impl.ServiceRequestServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +22,6 @@ import java.util.List;
 public class ServiceRequestController {
 
     private final ServiceRequestService serviceRequestService;
-    private final ServiceRequestServiceImpl serviceRequestServiceImpl;
 
     @PostMapping
     public ResponseEntity<ServiceRequestResponse> create(
@@ -133,7 +132,7 @@ public class ServiceRequestController {
             @PathVariable Long requestId,
             @RequestBody LiveLocationNotification location
     ) {
-        serviceRequestServiceImpl.updateLiveLocation(
+        serviceRequestService.updateLiveLocation(
                 requestId,
                 location.getLatitude(),
                 location.getLongitude()
@@ -141,10 +140,25 @@ public class ServiceRequestController {
 
         return ResponseEntity.ok().build();
     }
-    @GetMapping("/mechanic/active")
-    public ResponseEntity<ServiceRequestResponse>
-    getMechanicActive(Authentication authentication) {
 
+    @PutMapping("/{id}/payment")
+    public ResponseEntity<ServiceRequestResponse> updatePayment(
+            @PathVariable Long id,
+            @RequestBody PaymentUpdateRequest request
+    ) {
+        return ResponseEntity.ok(
+                serviceRequestService.updatePayment(
+                        id,
+                        request.getPaymentMethod(),
+                        request.getPaymentStatus()
+                )
+        );
+    }
+
+    @GetMapping("/mechanic/active")
+    public ResponseEntity<ServiceRequestResponse> getMechanicActive(
+            Authentication authentication
+    ) {
         return ResponseEntity.ok(
                 serviceRequestService.getMechanicActiveRequest(
                         authentication.getName()
@@ -153,15 +167,16 @@ public class ServiceRequestController {
     }
 
     @GetMapping("/mechanic/stats")
-    public ResponseEntity<MechanicStatsResponse>
-    getMechanicStats(Authentication authentication) {
-
+    public ResponseEntity<MechanicStatsResponse> getMechanicStats(
+            Authentication authentication
+    ) {
         return ResponseEntity.ok(
                 serviceRequestService.getMechanicStats(
                         authentication.getName()
                 )
         );
     }
+
     @PutMapping("/{id}/cash-collected")
     public ResponseEntity<ServiceRequestResponse> markCashCollected(
             @PathVariable Long id

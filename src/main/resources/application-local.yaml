@@ -23,6 +23,17 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 153638514241-l636habkio0verl6opkp4oab23pedhe3.apps.googleusercontent.com
+            client-secret: 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
+            scope:
+              - email
+              - profile
+
 jwt:
   secret: UmVzcW9yYVN1cGVyU2VjdXJlSldUU2VjcmV0S2V5Rm9yTG9jYWxEZXZlbG9wbWVudDIwMjY=
   expiration: 86400000

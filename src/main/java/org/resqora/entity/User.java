@@ -25,7 +25,7 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = true, unique = true)
     private String phone;
 
     @Column(nullable = false)
@@ -52,7 +52,7 @@ public class User {
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Boolean emailVerified=false;
+    private Boolean emailVerified = false;
     private String verificationToken;
 
     @PrePersist

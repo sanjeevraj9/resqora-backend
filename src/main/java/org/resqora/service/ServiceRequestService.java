@@ -5,6 +5,7 @@ import org.resqora.dto.request.UpdateStatusRequest;
 import org.resqora.dto.response.MechanicStatsResponse;
 import org.resqora.dto.response.NearbyMechanicResponse;
 import org.resqora.dto.response.ServiceRequestResponse;
+import org.resqora.entity.ServiceRequest;
 
 import java.util.List;
 
@@ -29,7 +30,18 @@ public interface ServiceRequestService {
             String email
     );
     ServiceRequestResponse getMechanicActiveRequest(String email);
+    void updateLiveLocation(
+            Long requestId,
+            Double latitude,
+            Double longitude
+    );
+
 
     MechanicStatsResponse getMechanicStats(String email);
     ServiceRequestResponse markCashCollected(Long requestId);
+    ServiceRequestResponse updatePayment(
+            Long requestId,
+            String paymentMethod,
+            String paymentStatus
+    );
 }

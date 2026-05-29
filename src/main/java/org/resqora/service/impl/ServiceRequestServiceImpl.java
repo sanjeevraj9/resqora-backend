@@ -8,6 +8,7 @@ import org.resqora.entity.MechanicProfile;
 import org.resqora.entity.ServiceRequest;
 import org.resqora.entity.User;
 import org.resqora.entity.Vehicle;
+import org.resqora.enums.PaymentMethod;
 import org.resqora.enums.PaymentStatus;
 import org.resqora.enums.RequestStatus;
 import org.resqora.enums.Role;
@@ -449,6 +450,39 @@ public class ServiceRequestServiceImpl implements ServiceRequestService {
                 .completedJobs(completed)
                 .totalEarnings(earnings)
                 .build();
+    }
+    @Override
+    public ServiceRequestResponse updatePayment(
+            Long requestId,
+            String paymentMethod,
+            String paymentStatus
+    ) {
+        ServiceRequest request =
+                serviceRequestRepository
+                        .findById(requestId)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "Request not found"
+                                ));
+
+        try {
+            request.setPaymentMethod(
+                    PaymentMethod.valueOf(paymentMethod)
+            );
+
+            request.setPaymentStatus(
+                    PaymentStatus.valueOf(paymentStatus)
+            );
+
+        } catch (Exception e) {
+            throw new BadRequestException(
+                    "Invalid payment data"
+            );
+        }
+
+        serviceRequestRepository.save(request);
+
+        return map(request);
     }
 
     private ServiceRequestResponse map(ServiceRequest request) {
