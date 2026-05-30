@@ -27,7 +27,7 @@ public class OAuth2SuccessHandler
     private final UserRepository userRepository;
 
     private final JwtService jwtService;
-    @Value(("${FRONTEND_URL"))
+    @Value(("${FRONTEND_URL:http://localhost:4200}"))
     private String frontendUrl;
 
     @Override
