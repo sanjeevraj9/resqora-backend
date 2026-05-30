@@ -10,6 +10,7 @@ import org.resqora.entity.User;
 import org.resqora.enums.Role;
 import org.resqora.repository.UserRepository;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -26,6 +27,8 @@ public class OAuth2SuccessHandler
     private final UserRepository userRepository;
 
     private final JwtService jwtService;
+    @Value(("${FRONTEND_URL"))
+    private String frontendUrl;
 
     @Override
     public void onAuthenticationSuccess(
@@ -102,7 +105,7 @@ public class OAuth2SuccessHandler
 
         response.sendRedirect(
 
-                "http://localhost:4200/oauth-success"
+                frontendUrl + "/oauth-success"
 
                         + "?token=" + token
 
