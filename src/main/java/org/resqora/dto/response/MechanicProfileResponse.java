@@ -15,6 +15,9 @@ public class MechanicProfileResponse {
     private String city;
 
     private String shopName;
+    private String profileImageUrl;
+
+    private String shopImageUrl;
     private String specialization;
 
     private Integer experienceYears;
@@ -26,4 +29,5 @@ public class MechanicProfileResponse {
     private Integer completedJobs;
 
     private Double totalEarnings;
+
 }

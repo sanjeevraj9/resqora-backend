@@ -2,6 +2,7 @@ package org.resqora.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.resqora.dto.request.AvailabilityRequest;
+import org.resqora.dto.request.UpdateMechanicProfileRequest;
 import org.resqora.dto.response.MechanicProfileResponse;
 import org.resqora.dto.response.ServiceRequestResponse;
 import org.resqora.entity.MechanicProfile;
@@ -91,6 +92,33 @@ public class MechanicServiceImpl implements MechanicService {
                 .toList();
     }
 
+    @Override
+    public MechanicProfileResponse updateProfile(
+            UpdateMechanicProfileRequest request,
+            String email
+    ) {
+
+        User mechanic =
+                getMechanic(email);
+
+        MechanicProfile profile =
+                mechanicProfileRepository
+                        .findByUser(mechanic)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException("Mechanic not found"));
+        mechanic.setName(request.getName());
+        mechanic.setPhone(request.getPhone());
+        profile.setShopName(request.getShopName());
+        profile.setSpecialization(request.getSpecialization());
+        profile.setExperienceYears(request.getExperienceYears());
+        userRepository.save(mechanic);
+        mechanicProfileRepository.save(profile);
+        return mapProfile(
+                mechanic, profile
+        );
+
+    }
+
     private User getMechanic(String email) {
 
         User mechanic = userRepository.findByEmail(email)
@@ -138,6 +166,12 @@ public class MechanicServiceImpl implements MechanicService {
                 .phone(user.getPhone())
                 .city(user.getCity())
                 .shopName(profile.getShopName())
+                .profileImageUrl(
+                        profile.getProfileImageUrl()
+                )
+                .shopImageUrl(
+                        profile.getShopImageUrl()
+                )
                 .specialization(profile.getSpecialization())
                 .experienceYears(
                         profile.getExperienceYears()

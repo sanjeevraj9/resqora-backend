@@ -7,6 +7,7 @@ public class UpdateMechanicProfileRequest {
 
     private String name;
     private String phone;
+    private String shopName;
     private String city;
     private String specialization;
     private Integer experienceYears;

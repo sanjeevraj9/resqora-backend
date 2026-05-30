@@ -1,6 +1,7 @@
 package org.resqora.service;
 
 import org.resqora.dto.request.AvailabilityRequest;
+import org.resqora.dto.request.UpdateMechanicProfileRequest;
 import org.resqora.dto.response.MechanicProfileResponse;
 import org.resqora.dto.response.ServiceRequestResponse;
 
@@ -17,4 +18,9 @@ public interface MechanicService {
     List<ServiceRequestResponse> getAssignedRequests(String email);
 
     List<ServiceRequestResponse> getHistory(String email);
+
+    MechanicProfileResponse updateProfile(
+            UpdateMechanicProfileRequest request,
+            String email
+    );
 }
