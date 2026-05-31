@@ -21,21 +21,21 @@ public class ChatController {
     private final SimpMessagingTemplate messagingTemplate;
 
     @MessageMapping("/chat.send")
-    public void sendMessage(@Payload ChatMessageDTO dto){
-        ChatMessage saved=chatService.saveMessage(dto);
+    public void sendMessage(@Payload ChatMessageDTO dto) {
+        ChatMessage saved = chatService.saveMessage(dto);
 
         messagingTemplate.convertAndSend(
-                "/topic/chat/"+dto.getReceiverId()
-                ,saved
+                "/topic/chat/" + dto.getReceiverId(), saved
         );
-        System.out.println("CHAT SEND");
-        System.out.println("FROM: " + dto.getSenderId());
-        System.out.println("TO: " + dto.getReceiverId());
+
+        messagingTemplate.convertAndSend(
+                "/topic/chat/" + dto.getSenderId(), saved
+        );
     }
 
     @GetMapping("/api/chat/history/{bookingId}")
     @ResponseBody
-    public List<ChatMessage> getChatHistory(@PathVariable Long bookingId){
+    public List<ChatMessage> getChatHistory(@PathVariable Long bookingId) {
         return chatService.getChatHistory(bookingId);
     }
 }
