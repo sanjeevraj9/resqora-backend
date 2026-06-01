@@ -124,6 +124,7 @@ public class OAuth2SuccessHandler
                                 user.getName(),
                                 java.nio.charset.StandardCharsets.UTF_8
                         )
+                        + "&id=" + user.getId()
         );
     }
 }
