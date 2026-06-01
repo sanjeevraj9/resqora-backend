@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.resqora.security.CustomUserDetailsService;
 import org.resqora.security.JwtAuthFilter;
+import org.resqora.security.OAuth2RoleFilter;
 import org.resqora.security.OAuth2SuccessHandler;
 
 import org.springframework.context.annotation.Bean;
@@ -33,6 +34,7 @@ public class SecurityConfig {
 
     private final OAuth2SuccessHandler
             oAuth2SuccessHandler;
+    private final OAuth2RoleFilter oAuth2RoleFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(
@@ -72,6 +74,10 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(
                                 SessionCreationPolicy.STATELESS
                         )
+                )
+                .addFilterBefore(
+                        oAuth2RoleFilter,
+                        UsernamePasswordAuthenticationFilter.class
                 )
 
                 .addFilterBefore(
