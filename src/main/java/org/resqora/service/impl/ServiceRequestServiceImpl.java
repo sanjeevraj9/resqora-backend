@@ -70,44 +70,6 @@ public class ServiceRequestServiceImpl implements ServiceRequestService {
 
         serviceRequest = serviceRequestRepository.save(serviceRequest);
 
-        List<MechanicProfile> mechanics =
-                mechanicProfileRepository.findByAvailabilityTrue();
-
-        for (MechanicProfile mechanic : mechanics) {
-
-            double distance = GeoUtil.calculateDistance(
-                    serviceRequest.getLatitude().doubleValue(),
-                    serviceRequest.getLongitude().doubleValue(),
-                    mechanic.getLatitude().doubleValue(),
-                    mechanic.getLongitude().doubleValue()
-            );
-
-            if (distance > 10.0) {
-                continue;
-            }
-
-            RequestNotificationResponse notification =
-                    RequestNotificationResponse.builder()
-                            .requestId(serviceRequest.getId())
-                            .issueType(serviceRequest.getIssueType().name())
-                            .description(serviceRequest.getDescription())
-                            .latitude(serviceRequest.getLatitude().doubleValue())
-                            .longitude(serviceRequest.getLongitude().doubleValue())
-                            .estimatedPrice(
-                                    serviceRequest.getEstimatedPrice() != null
-                                            ? serviceRequest.getEstimatedPrice().doubleValue()
-                                            : 0.0
-                            )
-                            .customerName(user.getName())
-                            .customerPhone(user.getPhone())
-                            .build();
-
-            notificationService.notifyMechanic(
-                    mechanic.getUser(),
-                    notification
-            );
-        }
-
         return map(serviceRequest);
     }
 
@@ -266,7 +228,6 @@ public class ServiceRequestServiceImpl implements ServiceRequestService {
                         .build();
 
 
-
         notificationService.notifyUser(
                 request.getUser(),
                 notification
@@ -421,6 +382,7 @@ public class ServiceRequestServiceImpl implements ServiceRequestService {
 
         return map(requests.get(0));
     }
+
     @Override
     public MechanicStatsResponse getMechanicStats(
             String email
@@ -451,7 +413,7 @@ public class ServiceRequestServiceImpl implements ServiceRequestService {
                 .totalEarnings(earnings)
                 .build();
     }
-    @Override
+
     public ServiceRequestResponse updatePayment(
             Long requestId,
             String paymentMethod,
@@ -461,26 +423,55 @@ public class ServiceRequestServiceImpl implements ServiceRequestService {
                 serviceRequestRepository
                         .findById(requestId)
                         .orElseThrow(() ->
-                                new ResourceNotFoundException(
-                                        "Request not found"
-                                ));
+                                new ResourceNotFoundException("Request not found"));
 
         try {
-            request.setPaymentMethod(
-                    PaymentMethod.valueOf(paymentMethod)
-            );
-
-            request.setPaymentStatus(
-                    PaymentStatus.valueOf(paymentStatus)
-            );
-
+            request.setPaymentMethod(PaymentMethod.valueOf(paymentMethod));
+            request.setPaymentStatus(PaymentStatus.valueOf(paymentStatus));
         } catch (Exception e) {
-            throw new BadRequestException(
-                    "Invalid payment data"
-            );
+            throw new BadRequestException("Invalid payment data");
         }
 
+        // ✅ Payment confirmed — ab REQUESTED status set karo
+        request.setStatus(RequestStatus.REQUESTED);
+
         serviceRequestRepository.save(request);
+
+        // ✅ Ab mechanic notify karo
+        User user = request.getUser();
+
+        List<MechanicProfile> mechanics =
+                mechanicProfileRepository.findByAvailabilityTrue();
+
+        for (MechanicProfile mechanic : mechanics) {
+
+            double distance = GeoUtil.calculateDistance(
+                    request.getLatitude().doubleValue(),
+                    request.getLongitude().doubleValue(),
+                    mechanic.getLatitude().doubleValue(),
+                    mechanic.getLongitude().doubleValue()
+            );
+
+            if (distance > 10.0) continue;
+
+            RequestNotificationResponse notification =
+                    RequestNotificationResponse.builder()
+                            .requestId(request.getId())
+                            .issueType(request.getIssueType().name())
+                            .description(request.getDescription())
+                            .latitude(request.getLatitude().doubleValue())
+                            .longitude(request.getLongitude().doubleValue())
+                            .estimatedPrice(
+                                    request.getEstimatedPrice() != null
+                                            ? request.getEstimatedPrice().doubleValue()
+                                            : 0.0
+                            )
+                            .customerName(user.getName())
+                            .customerPhone(user.getPhone())
+                            .build();
+
+            notificationService.notifyMechanic(mechanic.getUser(), notification);
+        }
 
         return map(request);
     }
@@ -524,11 +515,12 @@ public class ServiceRequestServiceImpl implements ServiceRequestService {
                                 : null
                 )
                 .customerName(
-                        request.getUser()!=null
-                                ? request.getUser().getName():null
+                        request.getUser() != null
+                                ? request.getUser().getName() : null
                 )
                 .build();
     }
+
     @Override
     public ServiceRequestResponse markCashCollected(
             Long requestId
