@@ -3,7 +3,6 @@ package org.resqora.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.resqora.dto.request.CreateServiceRequest;
-import org.resqora.dto.request.PaymentUpdateRequest;
 import org.resqora.dto.request.UpdateStatusRequest;
 import org.resqora.dto.response.LiveLocationNotification;
 import org.resqora.dto.response.MechanicStatsResponse;
@@ -141,19 +140,6 @@ public class ServiceRequestController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/{id}/payment")
-    public ResponseEntity<ServiceRequestResponse> updatePayment(
-            @PathVariable Long id,
-            @RequestBody PaymentUpdateRequest request
-    ) {
-        return ResponseEntity.ok(
-                serviceRequestService.updatePayment(
-                        id,
-                        request.getPaymentMethod(),
-                        request.getPaymentStatus()
-                )
-        );
-    }
 
     @GetMapping("/mechanic/active")
     public ResponseEntity<ServiceRequestResponse> getMechanicActive(

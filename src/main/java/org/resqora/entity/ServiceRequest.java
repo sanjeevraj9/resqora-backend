@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name="service_requests")
+@Table(name = "service_requests")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -25,15 +25,15 @@ public class ServiceRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
-    @JoinColumn(name="user_id",nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne
-    @JoinColumn(name="vehicle_id",nullable = false)
+    @JoinColumn(name = "vehicle_id", nullable = false)
     private Vehicle vehicle;
 
     @ManyToOne
-    @JoinColumn(name="mechanic_id")
+    @JoinColumn(name = "mechanic_id")
     private User mechanic;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -42,11 +42,11 @@ public class ServiceRequest {
     @Column(length = 500)
     private String description;
 
-    @Column(nullable = false,precision = 10,scale = 7)
+    @Column(nullable = false, precision = 10, scale = 7)
     private BigDecimal latitude;
 
-    @Column(nullable = false,precision = 10,scale = 7)
-        private BigDecimal longitude;
+    @Column(nullable = false, precision = 10, scale = 7)
+    private BigDecimal longitude;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -63,27 +63,34 @@ public class ServiceRequest {
     )
     private List<User> rejectedMechanics = new ArrayList<>();
 
+
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
+    
+    private String cashfreeOrderId;
+
+    private String paymentSessionId;
+
+    private BigDecimal paidAmount;
+
+    private LocalDateTime paidAt;
 
     @PrePersist
-    public void prePersist(){
-        createdAt=LocalDateTime.now();
-        updatedAt=LocalDateTime.now();
-        status=RequestStatus.REQUESTED;
+    public void prePersist() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+        status = RequestStatus.REQUESTED;
 
 
     }
 
     @PreUpdate
-    public void preUpdate(){
-        updatedAt=LocalDateTime.now();
+    public void preUpdate() {
+        updatedAt = LocalDateTime.now();
     }
-
-
 
 
 }

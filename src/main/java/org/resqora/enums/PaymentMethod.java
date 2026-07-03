@@ -2,5 +2,6 @@ package org.resqora.enums;
 
 public enum PaymentMethod {
     UPI,
-    COD
+    COD,
+    ONLINE
 }

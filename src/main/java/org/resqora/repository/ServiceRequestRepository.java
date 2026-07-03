@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface ServiceRequestRepository extends JpaRepository<ServiceRequest,Long> {
+public interface ServiceRequestRepository extends JpaRepository<ServiceRequest, Long> {
 
     List<ServiceRequest> findByUserOrderByCreatedAtDesc(User user);
 
@@ -22,6 +22,7 @@ public interface ServiceRequestRepository extends JpaRepository<ServiceRequest,L
     );
 
     List<ServiceRequest> findByMechanicOrderByCreatedAtDesc(User mechanic);
+
     List<ServiceRequest> findByMechanic(User mechanic);
 
     List<ServiceRequest> findByMechanicAndStatusIn(
@@ -29,4 +30,5 @@ public interface ServiceRequestRepository extends JpaRepository<ServiceRequest,L
             List<RequestStatus> statuses
     );
 
+    Optional<ServiceRequest> findByCashfreeOrderId(String orderId);
 }

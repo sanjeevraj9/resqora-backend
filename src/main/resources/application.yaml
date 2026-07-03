@@ -58,3 +58,11 @@ cloudinary:
   cloud-name: ${CLOUDINARY_CLOUD_NAME}
   api-key: ${CLOUDINARY_API_KEY}
   api-secret: ${CLOUDINARY_API_SECRET}
+
+
+cashfree:
+  client:
+    id: ${CASHFREE_CLIENT_ID}
+    secret: ${CASHFREE_CLIENT_SECRET}
+  base:
+    url: ${CASHFREE_BASE_URL:https://sandbox.cashfree.com/pg}
